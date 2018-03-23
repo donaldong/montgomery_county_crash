@@ -1,0 +1,6 @@
+load("RData/Off.Road.Description.raw.RData")
+t <- sort(table(feature), decreasing=TRUE)
+t <- head(t, 20)
+par(las=2)
+par(mar=c(5,15,4,2))
+barplot(t, horiz=TRUE)
