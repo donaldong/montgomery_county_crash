@@ -1,2 +1,7 @@
 .DS_STORE
 *.swp
+.raw.RData
+.RData
+.RPlot
+RData/
+RPlot/
