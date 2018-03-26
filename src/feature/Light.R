@@ -18,6 +18,6 @@ process.Agency.Name <- function(feature) {
 
 if (!exists(".no.output")) {
   load("RData/Light.raw.RData")
-  feature <- process.Agency.Name(feature)
+  feature <- process.Light(feature)
   save(feature, file="RData/Light.RData")
 }
