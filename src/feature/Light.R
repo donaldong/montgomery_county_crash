@@ -1,4 +1,4 @@
-process.Agency.Name <- function(feature) {
+process.Light <- function(feature) {
   #' Process Light
   #'      keep top 2 Light categories, combine the rest into `Light Not Perfect`
   #'
