@@ -5,3 +5,5 @@
 .RPlot
 RData/
 RPlot/
+.Rhistory
+Rplots.pdf
