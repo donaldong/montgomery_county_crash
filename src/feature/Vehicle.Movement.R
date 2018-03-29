@@ -1,17 +1,16 @@
 process.Vehicle.Movement <- function(feature) {
-  #' Process Light
-  #'      keep top 2 Light categories, combine the rest into `Light Not Perfect`
+  #' Process Vehicle Movment
+  #'     Keep the top 5 feature, merge the result into `Other` 
   #'
   #' @param feature The raw Light from the data set
   #' @return vector of string.
   keep <- names(head(sort(table(feature), decreasing=TRUE), 5))
-  unknown <- c("UNKNOWN", "OTHER", "N/A")
   result <- vector(mode="character", length=length(feature))
   for (i in 1:length(feature)) {
     if (feature[i] %in% keep) {
       result[i] = as.character(feature[i])
-    } else if (feature[i] %in% unknown) {
-      result[i] = "UNKNOWN"
+    } else {
+      result[i] = "Other"
     }
   }
   return(result)
