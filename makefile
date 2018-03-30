@@ -6,7 +6,7 @@ all: .raw.RData .RData .RPlot
 	touch .raw.RData
 
 DATA_SCRIPTS = $(wildcard src/feature/*.R)
-PLOT_SCRIPTS = $(wildcard src/feature/plot/*.R)
+PLOT_SCRIPTS = $(wildcard src/feature/plot/*.R src/integration/*.R)
 
 .RData: .raw.RData $(DATA_SCRIPTS)
 	for x in $(DATA_SCRIPTS); do \
@@ -17,9 +17,6 @@ PLOT_SCRIPTS = $(wildcard src/feature/plot/*.R)
 .RPlot: .RData $(PLOT_SCRIPTS) 
 	mkdir -p RPlot
 	for x in $(PLOT_SCRIPTS); do \
-		Rscript $$x; \
-	done
-	for x in $(wildcard src/integration); do \
 		Rscript $$x; \
 	done
 	mv *.RPlot.pdf RPlot/
