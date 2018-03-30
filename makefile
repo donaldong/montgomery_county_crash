@@ -19,6 +19,9 @@ PLOT_SCRIPTS = $(wildcard src/feature/plot/*.R)
 	for x in $(PLOT_SCRIPTS); do \
 		Rscript $$x; \
 	done
+	for x in $(wildcard src/integration); do \
+		Rscript $$x; \
+	done
 	mv *.RPlot.pdf RPlot/
 	touch .RPlot
 
