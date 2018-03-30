@@ -14,7 +14,7 @@ if (!exists(".no.output")) {
     location <- feature
     load("RData/Vehicle.Movement.RData")
     movement <- feature
-    pdf(file="Bad_Weather.Location.RPlot.pdf")
+    pdf(file="Vehicle.Movement.Location.RPlot.pdf")
     plot.Vehicle.Movement(location, movement)
 }
 
