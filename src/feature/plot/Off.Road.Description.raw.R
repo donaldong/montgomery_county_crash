@@ -1,5 +1,5 @@
 plot.Off.Road.Description.raw <- function(feature) {
-  t <- sort(table(feature), decreasing=TRUE)
+  t <- sort(head(table(feature), 20), decreasing=TRUE)
   par(mar=c(5,12,5,2))
   barplot(t, horiz=TRUE, las=1, main="Off.Road.Description (raw)")
 }
