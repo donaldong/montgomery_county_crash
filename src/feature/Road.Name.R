@@ -4,7 +4,8 @@ process.Road.Name <- function(feature) {
   #'
   #' @param feature The raw Light from the data set
   #' @return vector of string.
-  keep <- names(head(sort(table(feature), decreasing=TRUE), 5))
+  dat = head(sort(table(feature), decreasing=TRUE), 5)
+  keep <- names(dat[2:5])
   result <- vector(mode="character", length=length(feature))
   for (i in 1:length(feature)) {
     if (feature[i] %in% keep) {
