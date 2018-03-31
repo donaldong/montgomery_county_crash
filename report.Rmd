@@ -17,6 +17,19 @@ dat <- read.csv("https://data.montgomerycountymd.gov/api/views/mmzv-x632/rows.cs
 ```{r }
 str(dat)
 ```
+## ACRS Report Type 
+```{r}
+plot.ACRS.Report.Type <- function(feature) {
+    t <- sort(table(feature), decreasing=TRUE)
+    par(mar=c(5,12,5,2))
+    barplot(t, horiz=TRUE, las=1, main="ACRS Report Type")
+}
+plot.ACRS.Report.Type(dat$ACRS.Report.Type)
+```
+<p>
+In this data we didn't find anything unusual. 
+There were three categories reported which consisted of Fatal Crash, Injury, and Property Damage Crash.
+</p>
 ## Agency Name
 ```{r}
 Agency.Name.raw <- dat$Agency.Name
@@ -55,7 +68,9 @@ plot.Agency.Name <- function(feature) {
 }
 plot.Agency.Name(Agency.Name)
 ```
-Some descriptions here.
+<p>
+When we looked at the Agency Name feature, we found that there were more than 4 agencies involved; therefore, we decided to keep the top three agencies and gather the rest into an additional category named Other. Montgomery County Police was the top agency involved in the reports.
+</p>
 ## Circumstance
 ```{r}
 plot.Circumstance.raw <- function(feature) {
@@ -101,7 +116,7 @@ plot.Circumstance <- function(feature) {
 plot.Circumstance(Circumstance)
 ```
 <p> 
-Some descriptions here.
+In the Circumstance feature we found that most categories had the word N/A included so we went ahead and stripped that away. Once our data was cleaned, we clearly see that other than the N/A's, the circumstances that followed had to do with water/moist.
 </p>
 ## Collision Type
 ```{r}
@@ -155,7 +170,7 @@ plot.Collision.Type <- function(feature) {
 plot.Collision.Type(Collision.Type)
 ```
 <p> 
-Desc
+Under the Collision feature, we found that there were multiple combinations of vehicles so we decided to gather them in similar categories. We decided to gather all those accidents with any involvement turning left under the Left category and the same for Right, and Sideswipe. We kept the top two categories and gathered the Unknown's and N/A's with the category Other.
 </p>
 ## Crash Date Time
 ```{r }
@@ -186,7 +201,7 @@ plot.Crash.Date.Time <- function(feature) {
 plot.Crash.Date.Time(Crash.Date.Time)
 ```
 <p>
-123
+I will do that.
 </p>
 ## Driver Distracted By
 ```{r}
@@ -218,7 +233,7 @@ plot.Driver.Distracted.By <- function(feature) {
 plot.Driver.Distracted.By(Driver.Distracted.By)
 ```
 <p>
-123
+When analyzing this data, we realized that the number one reason for accidents was when the driver was not distracted. We went ahead and kept the top three reasons for the accident and gathered the rest into the Other category. This was done because the other values had very little effect in this data.
 </p>
 ## Driver Substance Abuse
 ```{r}
@@ -252,9 +267,9 @@ plot.Driver.Substance.Abuse <- function(feature) {
 plot.Driver.Substance.Abuse(Driver.Substance.Abuse)
 ```
 <p>
-123
+In this feature we had a little over 10 values so we shrunk it down to 3. We kept the value Non detected as it was the number one value, followed by the other value which contained the unknown and N/A values. For the final value we gathered all the other values as we realized that they all fall under the driving under the influence category.
 </p>
-## Driver Distracted By
+## Injury Severity
 ```{r}
 plot.Injury.Severity <- function(feature) {
     t <- sort(table(feature), decreasing=TRUE)
@@ -264,7 +279,7 @@ plot.Injury.Severity <- function(feature) {
 plot.Injury.Severity(dat$Injury.Severity)
 ```
 <p>
-123
+This feature had 5 values in which the No apparent injury was the most reported.
 </p>
 ## Light 
 ```{r}
@@ -295,7 +310,9 @@ plot.Light <- function(feature) {
 plot.Light(Light)
 ```
 <p>
-123
+In the Light feature we decided to gather the valued into three categories. We kept the value under Daylight and we
+gathered those with some light under one category. Those values under unknown and N/A were added into the other
+category.
 </p>
 ## Location
 ```{r}
@@ -331,7 +348,9 @@ plot.Location <- function(feature) {
 }
 plot.Location(Location)
 ```
-
+<p>
+In the Light feature we decided to gather the valued into three categories. We kept the value under Daylight and we gathered those with some light under one category. Those values under unknown and N/A were added into the other category 
+</p>
 ## Surface Condition
 ```{r}
 process.Surface.Condition <- function(feature) {
@@ -360,6 +379,9 @@ plot.Surface.Condition <- function(feature) {
 }
 plot.Surface.Condition(Surface.Condition)
 ```
+<p>
+to do
+</p>
 ## Traffic.Control
 ```{r}
 process.Traffic.Control <- function(feature) {
@@ -388,7 +410,9 @@ plot.Traffic.Control <- function(feature) {
 }
 plot.Traffic.Control(Traffic.Control)
 ```
-<p></p>
+<p>
+to do
+</p>
 ## Vehicle.Body.Type
 ```{r}
 process.Vehicle.Body.Type <- function(feature) {
@@ -418,7 +442,9 @@ plot.Vehicle.Body.Type <- function(feature) {
 }
 plot.Vehicle.Body.Type(Vehicle.Body.Type)
 ```
-<p></p>
+<p>
+to do
+</p>
 ### Vehicle.Damage.Extent
 ```{r}
 process.Vehicle.Damage.Extent <- function(feature) {
@@ -448,7 +474,9 @@ plot.Vehicle.Damage.Extent <- function(feature) {
 }
 plot.Vehicle.Damage.Extent(Vehicle.Damage.Extent)
 ```
-<p></p>
+<p>
+to do
+</p>
 ### Vehicle Movement
 ```{r}
 process.Vehicle.Movement <- function(feature) {
@@ -477,7 +505,9 @@ plot.Vehicle.Movement <- function(feature) {
 }
 plot.Vehicle.Movement(Vehicle.Movement)
 ```
-<p></p>
+<p>
+to do
+</p>
 ## Weather
 ```{r}
 process.Weather <- function(feature) {
@@ -514,8 +544,11 @@ plot.Weather <- function(feature) {
 }
 plot.Weather(Weather)
 ```
-<p></p>
+<p>
+to do
+</p>
 # Combine features
+## Bad weather
 ```{r}
 plot.bad.weather <- function(location, weather) {
     library(ggmap)
@@ -532,4 +565,148 @@ plot.bad.weather <- function(location, weather) {
     p
 }
 plot.bad.weather(Location, Weather)
+```
+## Crash Hour Location
+```{r}
+plot.Crash.Hour <- function(location, hour) {
+    library(ggmap)
+    x <- location[seq(1, length(location), 2)]
+    y <- location[seq(2, length(location), 2)]
+    dat <- data.frame(long=y, lat=x, hour=factor(hour)) 
+    map = get_map(c(mean(y), mean(x)), maptype="road", zoom=11)
+    p = ggmap(map)
+    p = p + geom_point(data=dat, aes(x=long,y=lat, colour=hour), size=0.4, alpha = 0.2)
+    p
+}
+plot.Crash.Hour(Location, Crash.Date.Time$hour)
+```
+## Driver Substance Abuse Injury Severity
+```{r}
+plot.Driver.Substance.Abuse.Injury.Severity <- function(serverity, substance) {
+    t <- table(serverity, substance)
+    u <- unique(serverity)
+    barplot(t, beside = TRUE, col=topo.colors(length(u)))
+    legend("topright", levels(u), col=topo.colors(length(u)), pch=19)
+}
+plot.Driver.Substance.Abuse.Injury.Severity(dat$Injury.Severity, Driver.Substance.Abuse)
+```
+<p>
+to do
+</p>
+## Multiple Drivers Location
+```{r}
+plot.Multiple.Drivers <- function(Report.Number, location) {
+    t <- table(Report.Number)
+    i <- t > 2
+    r <- rownames(t[i])
+    index <- vector()
+    for (n in Report.Number) {
+        if (n %in% r) index <- c(index, TRUE)
+        else index <- c(index, FALSE)
+    }
+    library(ggmap)
+    x <- location[seq(1, length(location), 2)]
+    y <- location[seq(2, length(location), 2)]
+    x <- x[index]
+    y <- y[index]
+    dat <- data.frame(long=y, lat=x)
+    map = get_map(c(mean(y), mean(x)), maptype="road", zoom=11)
+    p = ggmap(map)
+    p = p + geom_point(data=dat, aes(x=long,y=lat),
+        color="red", size=0.2, alpha=0.2)
+    p
+}
+plot.Multiple.Drivers(dat$Report.Number, Location)
+```
+<p>
+to do
+</p>
+## Surface Condition Location
+```{r}
+plot.Surface.Condition <- function(location, condition) {
+    library(ggmap)
+    x <- location[seq(1, length(location), 2)]
+    y <- location[seq(2, length(location), 2)]
+    dat <- data.frame(long=y, lat=x, condition=factor(condition))
+    map = get_map(c(mean(y), mean(x)), maptype="road", zoom=11)
+    p = ggmap(map)
+    p = p + geom_point(data=dat, aes(x=long,y=lat, colour=condition), size=0.4, alpha = 0.2)
+    p
+}
+plot.Surface.Condition(Location, Surface.Condition) 
+```
+<p></p>
+## Traffic Control Location
+```{r}
+plot.Traffic.Control <- function(location, condition) {
+    library(ggmap)
+    x <- location[seq(1, length(location), 2)]
+    y <- location[seq(2, length(location), 2)]
+    dat <- data.frame(long=y, lat=x, condition=factor(condition))
+    map = get_map(c(mean(y), mean(x)), maptype="road", zoom=11)
+    p = ggmap(map)
+    p = p + geom_point(data=dat, aes(x=long,y=lat, colour=condition), size=0.4, alpha = 0.2)
+    p
+}
+plot.Traffic.Control(Location, Traffic.Control)
+```
+<p>
+to do
+</p>
+## Vehicle Body Type Location
+```{r}
+plot.Vehicle.Body.Type <- function(location, type) {
+    library(ggmap)
+    x <- location[seq(1, length(location), 2)]
+    y <- location[seq(2, length(location), 2)]
+    dat <- data.frame(long=y, lat=x, type=factor(type))
+    map = get_map(c(mean(y), mean(x)), maptype="road", zoom=11)
+    p = ggmap(map)
+    p = p + geom_point(data=dat, aes(x=long,y=lat, colour=type), size=0.4, alpha = 0.2)
+    p
+}
+plot.Vehicle.Body.Type(Location, Vehicle.Body.Type)
+```
+<p>
+to do
+</p>
+## Vehicle Damage Extent Injury Severity
+```{r}
+plot.Vehicle.Damage.Extent.Injury.Severity <- function(serverity, extent) {
+    t <- table(serverity, extent)
+    u <- unique(serverity)
+    barplot(t, beside = TRUE, col=topo.colors(length(u)))
+    legend("topright", levels(u), col=topo.colors(length(u)), pch=19)
+}
+plot.Vehicle.Damage.Extent.Injury.Severity(dat$Injury.Severity, Vehicle.Damage.Extent)
+```
+<p>
+to do
+</p>
+## Vehicle Movement Location
+```{r}
+plot.Vehicle.Movement <- function(location, movement) {
+    library(ggmap)
+    x <- location[seq(1, length(location), 2)]
+    y <- location[seq(2, length(location), 2)]
+    dat <- data.frame(long=y, lat=x, movement=factor(movement))
+    map = get_map(c(mean(y), mean(x)), maptype="road", zoom=11)
+    p = ggmap(map)
+    p = p + geom_point(data=dat, aes(x=long,y=lat, colour=movement), size=0.4, alpha = 0.2)
+    p
+}
+plot.Vehicle.Movement(Location, Vehicle.Movement)
+```
+<p>
+to do
+</p>
+## Weather Injury Severity
+```{r}
+plot.Weather.Injury.Severity <- function(serverity, weather) {
+    t <- table(serverity, weather)
+    u <- unique(serverity)
+    barplot(t, beside = TRUE, col=topo.colors(length(u)))
+    legend("topright", levels(u), col=topo.colors(length(u)), pch=19)
+}
+plot.Weather.Injury.Severity(dat$Injury.Severity, Weather)
 ```
