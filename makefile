@@ -22,6 +22,9 @@ PLOT_SCRIPTS = $(wildcard src/feature/plot/*.R src/integration/*.R)
 	mv *.RPlot.pdf RPlot/
 	touch .RPlot
 
+report.html: report.Rmd
+	Rscript -e "rmarkdown::render('report.Rmd')" && open report.html
+
 clean:
 	rm -f .raw.RData
 	rm -rf RData

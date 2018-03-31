@@ -1,6 +1,6 @@
 process.Circumstance <- function(feature) {
     #' Process Circumstance
-    #'      keep top 3 agency names, combine the rest into `Other`
+    #'      keep top 3 names, combine the rest into `Other`
     #'
     #' @param feature The raw Circumstance from the data set
     #' @return hast table A table where key is the circumstance, value is a vector of row id.

@@ -1,0 +1,535 @@
+---
+title: "Montgomery County Crash Reporting Data - Exploration and Visualization"
+author: "Donald Dong, Michael Sanchez"
+date: "Mar. 30, 2018"
+output: html_document
+---
+<hr>
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(prompt=TRUE, comment="", echo=TRUE)
+```
+Get the crashing report data from 
+[Montgomery County Government](https://data.montgomerycountymd.gov/Public-Safety/Crash-Reporting-Drivers-Data/mmzv-x632).
+```{r }
+dat <- read.csv("https://data.montgomerycountymd.gov/api/views/mmzv-x632/rows.csv")
+```
+# Exploration
+```{r }
+str(dat)
+```
+## Agency Name
+```{r}
+Agency.Name.raw <- dat$Agency.Name
+plot.Agency.Name.raw <- function(feature) {
+    t <- sort(table(feature), decreasing=TRUE)
+    t <- head(t, 20)
+    par(mar=c(5,12,5,2))
+    barplot(t, horiz=TRUE, las=1, main="Agency Name (Raw)")
+}
+plot.Agency.Name.raw(Agency.Name.raw)
+
+process.Agency.Name <- function(feature) {
+    #' Process Agency Names
+    #'      keep top 3 agency names, combine the rest into `Other`
+    #'
+    #' @param feature The raw Agency Names from the data set
+    #' @return vector of string.
+    keep <- names(head(sort(table(feature), decreasing=TRUE), 3))
+    result <- vector(mode="character", length=length(feature))
+    for (i in 1:length(feature)) {
+        if (feature[i] %in% keep) {
+            result[i] = as.character(feature[i])
+        } else {
+            result[i] = "Other"
+        }
+    }
+    return(result)
+}
+Agency.Name <- process.Agency.Name(Agency.Name.raw)
+
+plot.Agency.Name <- function(feature) {
+    t <- sort(table(feature), decreasing=TRUE)
+    t <- head(t, 20)
+    par(mar=c(5,12,5,2))
+    barplot(t, horiz=TRUE, las=1, main="Agency Name")
+}
+plot.Agency.Name(Agency.Name)
+```
+Some descriptions here.
+## Circumstance
+```{r}
+plot.Circumstance.raw <- function(feature) {
+    t <- sort(table(feature), decreasing=TRUE)
+    t <- head(t, 15)
+    par(mar=c(4,15,4,2))
+    barplot(t, horiz=TRUE, las=1, main="Circumstance (Raw, top 15)")
+}
+Circumstance.raw <- dat$Circumstance
+plot.Circumstance.raw(Circumstance.raw)
+
+process.Circumstance <- function(feature) {
+    #' Process Circumstance
+    #'      split the circumstance by comma
+    #'
+    #' @param feature The raw Circumstance from the data set
+    #' @return hast table A table where key is the circumstance, value is a vector of row id.
+    circ <- new.env(hash=TRUE)
+    for (i in 1:length(feature)) {
+        tokens <- strsplit(as.character(feature[i]), ", ")[[1]]
+        for (token in tokens) {
+            if (is.null(circ[[token]])) {
+                circ[[token]] = i
+            } else {
+                circ[[token]] = c(circ[[token]], i)
+            }
+        }
+    }
+    return(circ)
+}
+Circumstance <- process.Circumstance(Circumstance.raw)
+
+plot.Circumstance <- function(feature) {
+    keys <- ls(feature)
+    t <- vector()
+    for (i in 1:length(keys)) {
+        t[keys[i]] = length(feature[[keys[i]]])
+    }
+    t <- head(sort(t, decreasing=TRUE), 10)
+    par(mar=c(4,15,4,2))
+    barplot(t, horiz=TRUE, las=1, main="Circumstance (top 10)")
+}
+plot.Circumstance(Circumstance)
+```
+<p> 
+Some descriptions here.
+</p>
+## Collision Type
+```{r}
+plot.Collision.Type.raw <- function(feature) {
+  t <- sort(table(feature), decreasing=TRUE)
+  par(mar=c(5,12,5,2))
+  barplot(t, horiz=TRUE, las=1, main="Collision.Type (raw)")
+}
+plot.Collision.Type.raw(dat$Collision.Type)
+
+process.Collision.Type <- function(feature) {
+  #' Process Light
+  #'      keep top 2 Light categories, combine the rest into `Light Not Perfect`
+  #'
+  #' @param feature The raw Light from the data set
+  #' @return vector of string.
+  keep <- names(head(sort(table(feature), decreasing=TRUE), 2))
+  other <- c("OTHER", "UNKNOWN", "N/A")
+  single <- "SINGLE VEHICLE"
+  left <- c("OPPOSITE DIR BOTH LEFT TURN", "SAME DIR BOTH LEFT TURN", "SAME DIR REND LEFT TURN", "ANGLE MEETS LEFT TURN", "SAME DIRECTION LEFT TURN")
+  right <- c("SAME DIR REND RIGHT TURN", "ANGLE MEETS RIGHT TURN", "SAME DIRECTION RIGHT TURN")
+  head.On <- c("HEAD ON", "HEAD ON LEFT TURN", "ANGLE MEETS LEFT HEAD ON")
+  sideswipe <- c("OPPOSITE DIRECTION SIDESWIPE", "SAME DIRECTION SIDESWIPE")
+  result <- vector(mode="character", length=length(feature))
+  for (i in 1:length(feature)) {
+    if (feature[i] %in% keep) {
+      result[i] = as.character(feature[i])
+    } else if (feature[i] %in% single) {
+      result[i] = "SINGLE"
+    }else if (feature[i] %in% head.On) {
+      result[i] = "HEAD ON"
+    } else if (feature[i] %in% other) {
+      result[i] = "OTHER"
+    }else if (feature[i] %in% left) {
+      result[i] = "LEFT"
+    }else if (feature[i] %in% right) {
+      result[i] = "RIGHT"
+    } else if (feature[i] %in% sideswipe) {
+      result[i] = "SIDESWIPE"
+    }
+  }
+  return(result)
+}
+Collision.Type <- process.Collision.Type(dat$Collision.Type)
+
+plot.Collision.Type <- function(feature) {
+  t <- sort(table(feature), decreasing=TRUE)
+  par(mar=c(5,12,5,2))
+  barplot(t, horiz=TRUE, las=1, main="Collision Type")
+}
+plot.Collision.Type(Collision.Type)
+```
+<p> 
+Desc
+</p>
+## Crash Date Time
+```{r }
+process.Crash.Date.Time <- function(feature) {
+    #' Process Crash.Date.Times
+    #'
+    #' @param feature The raw Crash.Date.Times from the data set
+    #' @return vector of datetime.
+    feature <- as.character(feature)
+    return (strptime(feature, "%m/%d/%Y %I:%M:%S %p", tz="EST5EDT"))
+}
+Crash.Date.Time <- process.Crash.Date.Time(dat$Crash.Date.Time)
+
+plot.Crash.Date.Time <- function(feature) {
+    v <- vector()
+    for (i in 0:6) {
+        for (j in 0:23) {
+            v <- c(v, sum(feature$wday == i & feature$hour == j))
+        }
+    }
+    m <- matrix(v, ncol=7, nrow=length(v) / 7)
+    colnames(m) <- c("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
+    rownames(m) <- 0:23
+    par(mar=c(5,5,10,5))
+    heatmap(m, Rowv=NA, Colv=NA, col = heat.colors(256), scale="column", margins=c(5,5),
+        ylab="Hour", main="Crash Weekday vs Hour")
+}
+plot.Crash.Date.Time(Crash.Date.Time)
+```
+<p>
+123
+</p>
+## Driver Distracted By
+```{r}
+process.Driver.Distracted.By <- function(feature) {
+    #' Process Driver Distracted By
+    #'      keep top 3 distraction, combine the rest into `Other`
+    #'
+    #' @param feature The raw column from the data set
+    #' @return vector of string.
+    keep <- names(head(sort(table(feature), decreasing=TRUE), 3))
+    result <- vector(mode="character", length=length(feature))
+    for (i in 1:length(feature)) {
+        if (feature[i] %in% keep) {
+            result[i] = as.character(feature[i])
+        } else {
+            result[i] = "Other"
+        }
+    }
+    return(result)
+}
+Driver.Distracted.By <- process.Driver.Distracted.By(dat$Driver.Distracted.By)
+
+plot.Driver.Distracted.By <- function(feature) {
+    t <- sort(table(feature), decreasing=TRUE)
+    t <- head(t, 20)
+    par(mar=c(5,15,5,2))
+    barplot(t, horiz=TRUE, las=1, main="Driver Distracted By")
+}
+plot.Driver.Distracted.By(Driver.Distracted.By)
+```
+<p>
+123
+</p>
+## Driver Substance Abuse
+```{r}
+process.Driver.Substance.Abuse <- function(feature) {
+    #' Process Driver Substance Abuse
+    #'      Merge the rest except for `NONE DETECTED` into `DUI`
+    #'
+    #' @param feature The raw column from the data set
+    #' @return vector of string.
+    keep <- "NONE DETECTED"
+    other <- c("N/A", "OTHER", "UNKNOWN") 
+    result <- vector(mode="character", length=length(feature))
+    for (i in 1:length(feature)) {
+        if (feature[i] == keep) {
+            result[i] <- keep
+        } else if (feature[i] %in% other) {
+            result[i] <- "OTHER"  
+        } else {
+            result[i] <- "DUI"
+        }
+    }
+    return(result)
+}
+Driver.Substance.Abuse <- process.Driver.Substance.Abuse(dat$Driver.Substance.Abuse)
+
+plot.Driver.Substance.Abuse <- function(feature) {
+    t <- sort(table(feature), decreasing=TRUE)
+    par(mar=c(4,10,4,2))
+    barplot(t, horiz=TRUE, las=1, main="Driver Substance Abuse")
+}
+plot.Driver.Substance.Abuse(Driver.Substance.Abuse)
+```
+<p>
+123
+</p>
+## Driver Distracted By
+```{r}
+plot.Injury.Severity <- function(feature) {
+    t <- sort(table(feature), decreasing=TRUE)
+    par(mar=c(5,15,5,2))
+    barplot(t, horiz=TRUE, las=1, main="Injury Severity")
+}
+plot.Injury.Severity(dat$Injury.Severity)
+```
+<p>
+123
+</p>
+## Light 
+```{r}
+process.Light <- function(feature) {
+  #' Process Light
+  #'      keep top 2 Light categories, combine the rest into `Light Not Perfect`
+  #'
+  #' @param feature The raw Light from the data set
+  #' @return vector of string.
+  keep <- names(head(sort(table(feature), decreasing=TRUE), 2))
+  result <- vector(mode="character", length=length(feature))
+  for (i in 1:length(feature)) {
+    if (feature[i] %in% keep) {
+      result[i] = as.character(feature[i])
+    } else {
+      result[i] = "Light Not Perfect"
+    }
+  }
+  return(result)
+}
+Light <- process.Light(dat$Light)
+
+plot.Light <- function(feature) {
+  t <- sort(table(feature), decreasing=TRUE)
+  par(mar=c(5,12,5,2))
+  barplot(t, horiz=TRUE, las=1, main="Light")
+}
+plot.Light(Light)
+```
+<p>
+123
+</p>
+## Location
+```{r}
+process.Location <- function(feature) {
+    #' Process Locations
+    #'      Parse the location into numeric lat and long, where lat has odd indices
+    #'
+    #' @param feature The raw Locations from the data set
+    #' @return vector of numeric.
+    feature <- as.character(feature)
+    parse <- function(s) {
+        tokens <- strsplit(s, ", ")
+        x <- tokens[[1]][1]
+        y <- tokens[[1]][2]
+        x <- substr(x, 2, nchar(x))
+        y <- substr(y, 1, nchar(y) - 1)
+        return(c(as.numeric(x), as.numeric(y)))
+    }
+    return(sapply(feature, parse))
+}
+Location <- process.Location(dat$Location)
+
+plot.Location <- function(feature) {
+    library(ggmap)
+    x <- feature[seq(1, length(feature), 2)]
+    y <- feature[seq(2, length(feature), 2)]
+    dat <- data.frame(long=y, lat=x) 
+    map = get_map(c(mean(y), mean(x)), maptype="road", zoom=11)
+    p = ggmap(map)
+    p = p + geom_point(data=dat, aes(x=long,y=lat),
+        color="red", size=0.2, alpha=0.2)
+    p
+}
+plot.Location(Location)
+```
+
+## Surface Condition
+```{r}
+process.Surface.Condition <- function(feature) {
+  #' Process Surface.Condition
+  #'      keep top 2 surface conditions, combine the rest into `Other`
+  #'
+  #' @param feature The raw Surface.Condition from the data set
+  #' @return hast table A table where key is the surface.Condition, value is a vector of row id.
+  keep <- names(head(sort(table(feature), decreasing=TRUE), 2))
+  result <- vector(mode="character", length=length(feature))
+  for (i in 1:length(feature)) {
+    if (feature[i] %in% keep) {
+      result[i] = as.character(feature[i])
+    } else {
+      result[i] = "Other"
+    }
+  }
+  return(result)
+}
+Surface.Condition <- process.Surface.Condition(dat$Surface.Condition)
+
+plot.Surface.Condition <- function(feature) {
+  t <- sort(table(feature), decreasing=TRUE)
+  par(mar=c(5,12,5,2))
+  barplot(t, horiz=TRUE, las=1, main="Surface.Condition")
+}
+plot.Surface.Condition(Surface.Condition)
+```
+## Traffic.Control
+```{r}
+process.Traffic.Control <- function(feature) {
+    #' Process Traffic.Controls
+    #'      keep top 3 cats, combine the rest into `Other`
+    #'
+    #' @param feature The raw Traffic.Controls from the data set
+    #' @return vector of string.
+    keep <- c("NO CONTROLS", "TRAFFIC SIGNAL", "STOP SIGN")
+    result <- vector(mode="character", length=length(feature))
+    for (i in 1:length(feature)) {
+        if (feature[i] %in% keep) {
+            result[i] = as.character(feature[i])
+        } else {
+            result[i] = "Other"
+        }
+    }
+    return(result)
+}
+Traffic.Control <- process.Traffic.Control(dat$Traffic.Control)
+
+plot.Traffic.Control <- function(feature) {
+    t <- sort(table(feature), decreasing=TRUE)
+    par(mar=c(5,12,4,2))
+    barplot(t, horiz=TRUE, las=1, main="Traffic Control")
+}
+plot.Traffic.Control(Traffic.Control)
+```
+<p></p>
+## Vehicle.Body.Type
+```{r}
+process.Vehicle.Body.Type <- function(feature) {
+    #' Process Vehicle.Body.Types
+    #'      keep `PASSENGER CAR`, combine the rest into `Other`
+    #'
+    #' @param feature The raw Vehicle.Body.Types from the data set
+    #' @return vector of string.
+    keep <- "PASSENGER CAR"
+    result <- vector(mode="character", length=length(feature))
+    for (i in 1:length(feature)) {
+        if (feature[i] == keep) {
+            result[i] = as.character(feature[i])
+        } else {
+            result[i] = "Other"
+        }
+    }
+    return(result)
+}
+Vehicle.Body.Type <- process.Vehicle.Body.Type(dat$Vehicle.Body.Type)
+
+plot.Vehicle.Body.Type <- function(feature) {
+    t <- sort(table(feature), decreasing=TRUE)
+    t <- head(t, 20)
+    par(mar=c(5,15,5,2))
+    barplot(t, horiz=TRUE, las=1, main="Vehicle Body Type")
+}
+plot.Vehicle.Body.Type(Vehicle.Body.Type)
+```
+<p></p>
+### Vehicle.Damage.Extent
+```{r}
+process.Vehicle.Damage.Extent <- function(feature) {
+    #' Process Vehicle.Damage.Extents
+    #'     combine `OTHER`, `N/A`, `UNKNOWN` into `Other`
+    #'
+    #' @param feature The raw Vehicle.Damage.Extents from the data set
+    #' @return vector of string.
+    combine <- c("OTHER", "N/A", "UNKNOWN")
+    result <- vector(mode="character", length=length(feature))
+    for (i in 1:length(feature)) {
+        if (!feature[i] %in% combine) {
+            result[i] = as.character(feature[i])
+        } else {
+            result[i] = "Other"
+        }
+    }
+    return(result)
+}
+Vehicle.Damage.Extent <- process.Vehicle.Damage.Extent(dat$Vehicle.Damage.Extent)
+
+plot.Vehicle.Damage.Extent <- function(feature) {
+    t <- sort(table(feature), decreasing=TRUE)
+    t <- head(t, 20)
+    par(mar=c(5,10,4,2))
+    barplot(t, horiz=TRUE, las=1, main="Vehicle Damage Extent")
+}
+plot.Vehicle.Damage.Extent(Vehicle.Damage.Extent)
+```
+<p></p>
+### Vehicle Movement
+```{r}
+process.Vehicle.Movement <- function(feature) {
+  #' Process Vehicle Movment
+  #'     Keep the top 5 feature, merge the result into `Other` 
+  #'
+  #' @param feature The raw Light from the data set
+  #' @return vector of string.
+  keep <- names(head(sort(table(feature), decreasing=TRUE), 5))
+  result <- vector(mode="character", length=length(feature))
+  for (i in 1:length(feature)) {
+    if (feature[i] %in% keep) {
+      result[i] = as.character(feature[i])
+    } else {
+      result[i] = "Other"
+    }
+  }
+  return(result)
+}
+Vehicle.Movement <- process.Vehicle.Movement(dat$Vehicle.Movement)
+
+plot.Vehicle.Movement <- function(feature) {
+  t <- sort(table(feature), decreasing=TRUE)
+  par(mar=c(5,12,5,2))
+  barplot(t, horiz=TRUE, las=1, main="Vehicle.Movement")
+}
+plot.Vehicle.Movement(Vehicle.Movement)
+```
+<p></p>
+## Weather
+```{r}
+process.Weather <- function(feature) {
+  #' Process Weatger
+  #'      keep 3 categories, combine Foggy with cloudy,
+  #'      add a `Severe` category
+  #'      add an `Other` category
+  #'
+  #' @param feature The raw Weather from the data set
+  #' @return vector of string.
+  keep <- names(head(sort(table(feature), decreasing=TRUE), 2)) #here we process
+  cloudy <- c("FOGGY", "CLOUDY")
+  severe <- c("SNOW", "WINTRY MIX", "SLEET", "BLOWING SNOW", "SEVERE WINDS", "BLOWING SAND, SOIL, DIRT")
+  result <- vector(mode="character", length=length(feature)) #length of the new vector
+  for (i in 1:length(feature)) {
+    if (feature[i] %in% keep) {
+      result[i] = as.character(feature[i])
+    } else if (feature[i] %in% severe) {
+      result[i] = "SEVERE"
+    } else if (feature[i] %in% cloudy) {
+      result[i] = "CLOUDY"
+    }else { 
+      result[i] = "OTHER" 
+    }
+  }
+  return(result)
+}
+Weather <- process.Weather(dat$Weather)
+
+plot.Weather <- function(feature) {
+  t <- sort(table(feature), decreasing=TRUE)
+  par(mar=c(5,12,5,2))
+  barplot(t, horiz=TRUE, las=1, main="Weather")
+}
+plot.Weather(Weather)
+```
+<p></p>
+# Combine features
+```{r}
+plot.bad.weather <- function(location, weather) {
+    library(ggmap)
+    x <- location[seq(1, length(location), 2)]
+    y <- location[seq(2, length(location), 2)]
+    index <- weather != "CLEAR"
+    x <- x[index]
+    y <- y[index]
+    w <- weather[index]
+    dat <- data.frame(long=y, lat=x,weather=factor(w))
+    map = get_map(c(mean(y), mean(x)), maptype="road", zoom=11)
+    p = ggmap(map)
+    p = p + geom_point(data=dat, aes(x=long,y=lat, colour=weather), size=0.4, alpha = 0.2)
+    p
+}
+plot.bad.weather(Location, Weather)
+```
