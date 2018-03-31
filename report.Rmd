@@ -201,7 +201,11 @@ plot.Crash.Date.Time <- function(feature) {
 plot.Crash.Date.Time(Crash.Date.Time)
 ```
 <p>
-I will do that.
+To visualize the crash date time, we created a heatmap. 
+Each column in the plot represents a workday. Each row in the plot represents an hour (from 0 - 23).
+The brighter the cell is, more crash is recorded at that date time.
+Therefore, this plot suggests crashes are more likely to happen in busy hours.
+Also it could indicate the different busy hours on weekdays and weekends.
 </p>
 ## Driver Distracted By
 ```{r}
@@ -349,7 +353,7 @@ plot.Location <- function(feature) {
 plot.Location(Location)
 ```
 <p>
-In the Light feature we decided to gather the valued into three categories. We kept the value under Daylight and we gathered those with some light under one category. Those values under unknown and N/A were added into the other category 
+In this plot, we can find the values of latitude(y-value) and longitude(x-values) plotted with a red circle on the map.
 </p>
 ## Surface Condition
 ```{r}
@@ -380,7 +384,8 @@ plot.Surface.Condition <- function(feature) {
 plot.Surface.Condition(Surface.Condition)
 ```
 <p>
-to do
+For this feature, we combined the categories with small number of occurrence into 3 categories: `Dry`, `Wet`,
+and `Other`. We are interested in this feature because we think surface condition may cause more crashes. 
 </p>
 ## Traffic.Control
 ```{r}
@@ -411,9 +416,10 @@ plot.Traffic.Control <- function(feature) {
 plot.Traffic.Control(Traffic.Control)
 ```
 <p>
-to do
+For the traffic control feature, we also keep the top 3 features so it's easy to visualize.
+We would be interested in the whether traffic control has any correlations with the location of the crash.
 </p>
-## Vehicle.Body.Type
+## Vehicle Body Type
 ```{r}
 process.Vehicle.Body.Type <- function(feature) {
     #' Process Vehicle.Body.Types
@@ -443,7 +449,9 @@ plot.Vehicle.Body.Type <- function(feature) {
 plot.Vehicle.Body.Type(Vehicle.Body.Type)
 ```
 <p>
-to do
+Since there are many different types of vehicle body, we only keep `PASSENGER CAR`,
+which is the majority of the data. We combine the rest into `Other`. We would like to 
+find out whether there is any recognizable clusters if we plot the crash locations.
 </p>
 ### Vehicle.Damage.Extent
 ```{r}
@@ -475,7 +483,9 @@ plot.Vehicle.Damage.Extent <- function(feature) {
 plot.Vehicle.Damage.Extent(Vehicle.Damage.Extent)
 ```
 <p>
-to do
+`Vehicle Damage Extent` is another interesting feature. Since there are
+`OTHER`,`N/A`, and `UNKNOWN` in the dataset, we combine them into `Other`,
+so we can have a better visualization.
 </p>
 ### Vehicle Movement
 ```{r}
@@ -506,7 +516,8 @@ plot.Vehicle.Movement <- function(feature) {
 plot.Vehicle.Movement(Vehicle.Movement)
 ```
 <p>
-to do
+Intuitively, we think vehicle movement will be strongly correlated to distribution of crashes.
+We keep top five vehicle movement type, and combine the rest into `Other`.
 </p>
 ## Weather
 ```{r}
@@ -545,7 +556,9 @@ plot.Weather <- function(feature) {
 plot.Weather(Weather)
 ```
 <p>
-to do
+We think `weather` will also have significant impact on the crashes.
+Since there are many different weather types in the dataset, we combined some of
+them into `SEVERE`, `CLOUDY`, and `Other`.
 </p>
 # Combine features
 ## Bad weather
@@ -566,6 +579,10 @@ plot.bad.weather <- function(location, weather) {
 }
 plot.bad.weather(Location, Weather)
 ```
+<p>
+Since most of the days have a `CLEAR` weather in Montgomery County,
+we removed `CLEAR` and plotted the rest, and look for interesting patterns.
+</p>
 ## Crash Hour Location
 ```{r}
 plot.Crash.Hour <- function(location, hour) {
@@ -580,6 +597,10 @@ plot.Crash.Hour <- function(location, hour) {
 }
 plot.Crash.Hour(Location, Crash.Date.Time$hour)
 ```
+<p>
+As indicated by previous Crash Date Time plot, crashes are more likely to happen in the busy hours,
+which are the blue and purple points in the plot.
+</p>
 ## Driver Substance Abuse Injury Severity
 ```{r}
 plot.Driver.Substance.Abuse.Injury.Severity <- function(serverity, substance) {
@@ -591,7 +612,8 @@ plot.Driver.Substance.Abuse.Injury.Severity <- function(serverity, substance) {
 plot.Driver.Substance.Abuse.Injury.Severity(dat$Injury.Severity, Driver.Substance.Abuse)
 ```
 <p>
-to do
+We expect Driving Under Influence will have higher fatal injury rate then the others, 
+but it does not have that many entries. `None Detected` has the highest ratio of no apparent injury.
 </p>
 ## Multiple Drivers Location
 ```{r}
@@ -619,7 +641,7 @@ plot.Multiple.Drivers <- function(Report.Number, location) {
 plot.Multiple.Drivers(dat$Report.Number, Location)
 ```
 <p>
-to do
+By looking at this plot, we think crashes involve multiple drivers seem more likely happen on the main road.
 </p>
 ## Surface Condition Location
 ```{r}
@@ -635,7 +657,10 @@ plot.Surface.Condition <- function(location, condition) {
 }
 plot.Surface.Condition(Location, Surface.Condition) 
 ```
-<p></p>
+<p>
+We found there are certain roads have a higher density of the blue dots. 
+The plot implies accidents are more likely to happen these roads.
+</p>
 ## Traffic Control Location
 ```{r}
 plot.Traffic.Control <- function(location, condition) {
@@ -651,7 +676,8 @@ plot.Traffic.Control <- function(location, condition) {
 plot.Traffic.Control(Location, Traffic.Control)
 ```
 <p>
-to do
+Most big roads have traffic signal, but crash still occurs.
+Also there are many dots with red color, which means there isn't any traffic control.
 </p>
 ## Vehicle Body Type Location
 ```{r}
@@ -668,7 +694,7 @@ plot.Vehicle.Body.Type <- function(location, type) {
 plot.Vehicle.Body.Type(Location, Vehicle.Body.Type)
 ```
 <p>
-to do
+Most vehicles are passenger cars (the dominating blue dots).
 </p>
 ## Vehicle Damage Extent Injury Severity
 ```{r}
@@ -681,7 +707,6 @@ plot.Vehicle.Damage.Extent.Injury.Severity <- function(serverity, extent) {
 plot.Vehicle.Damage.Extent.Injury.Severity(dat$Injury.Severity, Vehicle.Damage.Extent)
 ```
 <p>
-to do
 </p>
 ## Vehicle Movement Location
 ```{r}
@@ -698,7 +723,6 @@ plot.Vehicle.Movement <- function(location, movement) {
 plot.Vehicle.Movement(Location, Vehicle.Movement)
 ```
 <p>
-to do
 </p>
 ## Weather Injury Severity
 ```{r}
@@ -710,3 +734,8 @@ plot.Weather.Injury.Severity <- function(serverity, weather) {
 }
 plot.Weather.Injury.Severity(dat$Injury.Severity, Weather)
 ```
+<p>
+Clear weather has a much higher ratio of possible injury.
+We think people tend to drive more carefully when the weather is not perfect.
+Thus when the weather is good, people won't be that cautious, and more crashes are likely to happen.
+</p>
